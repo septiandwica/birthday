@@ -1,54 +1,59 @@
 (function () {
   const second = 1000,
-        minute = second * 60,
-        hour = minute * 60,
-        day = hour * 24;
+    minute = second * 60,
+    hour = minute * 60,
+    day = hour * 24;
 
-  let birthday = "Apr 27,2023 02:01:00",
-      countDown = new Date(birthday).getTime(),
-      x = setInterval(function() {    
+  let birthday = "Apr 27,2023 02:15:00",
+    countDown = new Date(birthday).getTime(),
+    x = setInterval(function () {
+      let now = new Date().getTime(),
+        distance = countDown - now;
 
-        let now = new Date().getTime(),
-            distance = countDown - now;
+      (document.getElementById("days").innerText = Math.floor(distance / day)),
+        (document.getElementById("hours").innerText = Math.floor(
+          (distance % day) / hour
+        )),
+        (document.getElementById("minutes").innerText = Math.floor(
+          (distance % hour) / minute
+        )),
+        (document.getElementById("seconds").innerText = Math.floor(
+          (distance % minute) / second
+        ));
 
-        document.getElementById("days").innerText = Math.floor(distance / (day)),
-          document.getElementById("hours").innerText = Math.floor((distance % (day)) / (hour)),
-          document.getElementById("minutes").innerText = Math.floor((distance % (hour)) / (minute)),
-          document.getElementById("seconds").innerText = Math.floor((distance % (minute)) / second);
+      if (distance <= 0) {
+        window.open("./surprize.html");
 
-        if (distance <= 0) {
-          window.open('./surprize.html');
+        clearInterval(x);
+      }
+    }, 10);
+})();
 
-          clearInterval(x);
-        }
-      }, 10)
-  }());
+window.requestAnimFrame = (function () {
+  return (
+    window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    function (callback) {
+      window.setTimeout(callback, 1000 / 60);
+    }
+  );
+})();
 
-
-
-window.requestAnimFrame = function () {
-  return window.requestAnimationFrame ||
-  window.webkitRequestAnimationFrame ||
-  window.mozRequestAnimationFrame ||
-  function (callback) {
-    window.setTimeout(callback, 1000 / 60);
-  };
-}();
-
-var canvas = document.getElementById('canvas'),
-ctx = canvas.getContext('2d'),
-cw = window.innerWidth,
-ch = window.innerHeight,
-fireworks = [],
-particles = [],
-hue = 120,
-limiterTotal = 5,
-limiterTick = 0,
-timerTotal = 80,
-timerTick = 0,
-mousedown = false,
-mx,
-my;
+var canvas = document.getElementById("canvas"),
+  ctx = canvas.getContext("2d"),
+  cw = window.innerWidth,
+  ch = window.innerHeight,
+  fireworks = [],
+  particles = [],
+  hue = 120,
+  limiterTotal = 5,
+  limiterTick = 0,
+  timerTotal = 80,
+  timerTick = 0,
+  mousedown = false,
+  mx,
+  my;
 canvas.width = cw;
 canvas.height = ch;
 
@@ -58,7 +63,7 @@ function random(min, max) {
 
 function calculateDistance(p1x, p1y, p2x, p2y) {
   var xDistance = p1x - p2x,
-  yDistance = p1y - p2y;
+    yDistance = p1y - p2y;
   return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
 }
 
@@ -96,8 +101,13 @@ Firework.prototype.update = function (index) {
   this.speed *= this.acceleration;
 
   var vx = Math.cos(this.angle) * this.speed,
-  vy = Math.sin(this.angle) * this.speed;
-  this.distanceTraveled = calculateDistance(this.sx, this.sy, this.x + vx, this.y + vy);
+    vy = Math.sin(this.angle) * this.speed;
+  this.distanceTraveled = calculateDistance(
+    this.sx,
+    this.sy,
+    this.x + vx,
+    this.y + vy
+  );
 
   if (this.distanceTraveled >= this.distanceToTarget) {
     createParticles(this.tx, this.ty);
@@ -110,9 +120,12 @@ Firework.prototype.update = function (index) {
 
 Firework.prototype.draw = function () {
   ctx.beginPath();
-  ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+  ctx.moveTo(
+    this.coordinates[this.coordinates.length - 1][0],
+    this.coordinates[this.coordinates.length - 1][1]
+  );
   ctx.lineTo(this.x, this.y);
-  ctx.strokeStyle = 'hsl(' + hue + ', 100%, ' + this.brightness + '%)';
+  ctx.strokeStyle = "hsl(" + hue + ", 100%, " + this.brightness + "%)";
   ctx.stroke();
 
   ctx.beginPath();
@@ -153,9 +166,19 @@ Particle.prototype.update = function (index) {
 
 Particle.prototype.draw = function () {
   ctx.beginPath();
-  ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+  ctx.moveTo(
+    this.coordinates[this.coordinates.length - 1][0],
+    this.coordinates[this.coordinates.length - 1][1]
+  );
   ctx.lineTo(this.x, this.y);
-  ctx.strokeStyle = 'hsla(' + this.hue + ', 100%, ' + this.brightness + '%, ' + this.alpha + ')';
+  ctx.strokeStyle =
+    "hsla(" +
+    this.hue +
+    ", 100%, " +
+    this.brightness +
+    "%, " +
+    this.alpha +
+    ")";
   ctx.stroke();
 };
 
@@ -169,10 +192,10 @@ function createParticles(x, y) {
 function loop() {
   requestAnimFrame(loop);
   hue += 0.5;
-  ctx.globalCompositeOperation = 'destination-out';
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+  ctx.globalCompositeOperation = "destination-out";
+  ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
   ctx.fillRect(0, 0, cw, ch);
-  ctx.globalCompositeOperation = 'lighter';
+  ctx.globalCompositeOperation = "lighter";
   var i = fireworks.length;
   while (i--) {
     fireworks[i].draw();
@@ -187,7 +210,9 @@ function loop() {
 
   if (timerTick >= timerTotal) {
     if (!mousedown) {
-      fireworks.push(new Firework(cw / 2, ch, random(0, cw), random(0, ch / 2)));
+      fireworks.push(
+        new Firework(cw / 2, ch, random(0, cw), random(0, ch / 2))
+      );
       timerTick = 0;
     }
   } else {
@@ -213,8 +238,8 @@ window.onload = function () {
     box.addEventListener("click", openBox, false);
   }
   function stepClass(step) {
-    boxwrap.className = 'boxwrap';
-    boxwrap.className = 'boxwrap step-' + step;
+    boxwrap.className = "boxwrap";
+    boxwrap.className = "boxwrap step-" + step;
   }
   function openBox() {
     if (step === 1) {
@@ -232,21 +257,19 @@ window.onload = function () {
   }
 
   init();
-
 };
 
 function reveal() {
-  document.querySelector('.boxwrap').style.backgroundColor = 'transparent';
+  document.querySelector(".boxwrap").style.backgroundColor = "transparent";
 
   loop();
 
   var w, h;
   if (window.innerWidth >= 1000) {
-    w = 295;h = 185;
-  } else
-  {
-    w = 255;h = 155;
+    w = 295;
+    h = 185;
+  } else {
+    w = 255;
+    h = 155;
   }
-
 }
-
